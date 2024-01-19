@@ -1,0 +1,40 @@
+name: Build MSBuild
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  build-msbuild:
+    env:
+      BUILD_PLATFORM: "x86"
+      BUILD_CONFIGURATION: Release
+      ARCH: win32
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        sln:
+          - vs2015
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install build tools v140
+        if: |
+          matrix.sln == 'vs2015'
+        run: |
+          Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_buildtools.exe" -OutFile "vs_BuildTools.exe"
+          Start-Process -FilePath ./vs_BuildTools.exe -ArgumentList "--add", "Microsoft.VisualStudio.Component.VC.140", "--quiet", "--norestart", "--force", "--wait" -Wait -PassThru
+
+      - name: Build Project
+        run: |
+          msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{matrix.sln}} /p:Platform=${{env.BUILD_PLATFORM}}
+
+      - name: Store
+        uses: actions/upload-artifact@v3
+        with:
+          name: hello_world-${{matrix.sln}}
+          path: ${{matrix.sln}}\${{env.BUILD_CONFIGURATION}}\hello_world.dll
