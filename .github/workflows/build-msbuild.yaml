@@ -29,6 +29,12 @@ jobs:
           Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_buildtools.exe" -OutFile "vs_BuildTools.exe"
           Start-Process -FilePath ./vs_BuildTools.exe -ArgumentList "--add", "Microsoft.VisualStudio.Component.VC.140", "--quiet", "--norestart", "--force", "--wait" -Wait -PassThru
 
+      - name: Add MSBuild to PATH
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{env.ARCH}}
+          toolset: '14.0'
+
       - name: Build Project
         run: |
           msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{matrix.sln}} /p:Platform=${{env.BUILD_PLATFORM}}
