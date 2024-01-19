@@ -22,9 +22,9 @@ static std::string result;
 const char* hello_callback(const char* name)
 {
     result =
-        "{\n"
-        "   var arg = 'Hello, " + std::string(name) + "!';\n"
-        "   callback(arg);\n"
-        "}\n";
+        "{\r\n"
+        "   arg = 'Hello, " + std::string(name) + "!';\r\n"
+        "   callback(arg);\r\n"
+        "}";
     return result.c_str();
 }
