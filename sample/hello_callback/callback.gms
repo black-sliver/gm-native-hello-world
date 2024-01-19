@@ -1,3 +1,3 @@
 {
-    show_debug_message(argument0);
+    show_message(argument0);
 }
